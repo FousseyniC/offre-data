@@ -30,14 +30,9 @@ response = requests.post(
 )
 
 if response.status_code == 200:
-    
+
     donnees = response.json()
-
-
     liste_offres = donnees["results"][0]["hits"]
-
-    import pandas as pd
-
 
     offres_finales = []
 
@@ -63,9 +58,7 @@ if response.status_code == 200:
             "Ville": ville
         }
 
-
         offres_finales.append(dico_offre)
-
 
     df_final = pd.DataFrame(offres_finales)
 
