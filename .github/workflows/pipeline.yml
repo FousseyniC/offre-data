@@ -1,14 +1,18 @@
-name: Robot offre Data
+name: Robot Scraper WTTJ
 
 on:
   schedule:
     # Tourne tous les jours à 08h00 (Heure UTC)
     - cron: '0 8 * * *'
-  workflow_dispatch: # La magie : ça ajoute un bouton pour tester manuellement !
+  workflow_dispatch:
+
+# --- LE CORRECTIF GITHUB EST ICI ---
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   extraction-data:
-    runs-on: ubuntu-latest # On loue un serveur Linux gratuit à GitHub
+    runs-on: ubuntu-latest
 
     steps:
     - name: 1. Récupérer le code sur le dépôt
@@ -17,13 +21,12 @@ jobs:
     - name: 2. Installer Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11' # Ou la version que tu utilises
+        python-version: '3.11'
 
-    - name: 3. Installer les bibliothèques (Pandas, SQL...)
+    - name: 3. Installer les bibliothèques
       run: pip install -r requirements.txt
 
     - name: 4. Lancer l'extraction vers Supabase
       env:
-        # C'est ici que GitHub ouvre son coffre-fort pour donner la clé à Python !
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: python main.py
