@@ -1,0 +1,29 @@
+name: Robot offre Data
+
+on:
+  schedule:
+    # Tourne tous les jours à 08h00 (Heure UTC)
+    - cron: '0 8 * * *'
+  workflow_dispatch: # La magie : ça ajoute un bouton pour tester manuellement !
+
+jobs:
+  extraction-data:
+    runs-on: ubuntu-latest # On loue un serveur Linux gratuit à GitHub
+
+    steps:
+    - name: 1. Récupérer le code sur le dépôt
+      uses: actions/checkout@v4
+
+    - name: 2. Installer Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' # Ou la version que tu utilises
+
+    - name: 3. Installer les bibliothèques (Pandas, SQL...)
+      run: pip install -r requirements.txt
+
+    - name: 4. Lancer l'extraction vers Supabase
+      env:
+        # C'est ici que GitHub ouvre son coffre-fort pour donner la clé à Python !
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: python main.py
