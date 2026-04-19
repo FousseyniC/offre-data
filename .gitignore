@@ -1,0 +1,18 @@
+# Environnements virtuels
+.venv/
+venv/
+env/
+
+# Fichiers secrets
+.env
+
+# Base de données locale
+*.db
+
+
+# Fichiers systèmes et caches Python
+__pycache__/
+*.pyc
+.DS_Store
+
+

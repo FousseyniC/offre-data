@@ -1,7 +1,12 @@
+import os
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
 import requests
 import pandas as pd
 import json
 import sqlite3
+
+load_dotenv()
 
 headers = {
     'Accept': '*/*',
@@ -62,19 +67,19 @@ if response.status_code == 200:
 
     df_final = pd.DataFrame(offres_finales)
 
-    connexion = sqlite3.connect("ma_base_emploi.db")
+    url_base_de_donnees = os.getenv("DATABASE_URL")
+
+    moteur = create_engine(url_base_de_donnees)
 
     df_final.to_sql(
         name="offres_data",
-        con=connexion,
-        if_exists="replace",
+        con=moteur,
+        if_exists="append",
         index=False
     )
 
     print("Donné sauv")
 
-
-    connexion.close()
 
 
     print(df_final)
