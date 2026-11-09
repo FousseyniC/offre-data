@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 import requests
 import pandas as pd
 import json
@@ -56,29 +56,42 @@ if response.status_code == 200:
             ville = "Télétravail"
 
 
+        lien = f"https://www.welcometothejungle.com/fr/companies/{offre['organization']['slug']}/jobs/{offre['slug']}"
+
         dico_offre = {
-            "Titre du poste": titre,
-            "Entreprise": entreprise,
-            "Département": departement,
-            "Ville": ville
+            "reference": offre["reference"],
+            "titre": titre,
+            "entreprise": entreprise,
+            "departement": departement,
+            "ville": ville,
+            "contrat": offre.get("contract_type", "N/C"),
+            "date_publication": offre.get("published_at"),
+            "lien": lien,
         }
 
         offres_finales.append(dico_offre)
 
     df_final = pd.DataFrame(offres_finales)
+    df_final["date_publication"] = pd.to_datetime(df_final["date_publication"])
+    df_final = df_final.drop_duplicates(subset="reference")
 
     url_base_de_donnees = os.getenv("DATABASE_URL")
 
     moteur = create_engine(url_base_de_donnees)
 
+    # On garde seulement les offres pas encore enregistrées
+    if inspect(moteur).has_table("offres_data_v2"):
+        deja = pd.read_sql("SELECT reference FROM offres_data_v2", moteur)
+        df_final = df_final[~df_final["reference"].isin(deja["reference"])]
+
     df_final.to_sql(
-        name="offres_data",
+        name="offres_data_v2",
         con=moteur,
         if_exists="append",
         index=False
     )
 
-    print("Donné sauv")
+    print(f"{len(df_final)} nouvelles offres enregistrées")
 
 
 
