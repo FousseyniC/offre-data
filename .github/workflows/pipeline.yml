@@ -1,4 +1,4 @@
-name: Robot Scraper WTTJ
+﻿name: Robot Scraper WTTJ
 
 on:
   schedule:
@@ -6,9 +6,6 @@ on:
     - cron: '0 8 * * *'
   workflow_dispatch:
 
-# --- LE CORRECTIF GITHUB EST ICI ---
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   extraction-data:
@@ -16,10 +13,10 @@ jobs:
 
     steps:
     - name: 1. Récupérer le code sur le dépôt
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: 2. Installer Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.11'
 
